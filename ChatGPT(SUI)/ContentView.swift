@@ -18,10 +18,11 @@ struct QuestionAndAnswer: Identifiable {
 
 struct ContentView: View {
     
-    let openAI = OpenAISwift(authToken: "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")
+    let openAI = OpenAISwift(authToken: "")
     
-    @State private var search: String = ""
+    @State private var search = ""
     @State private var questionAndAnswers: [QuestionAndAnswer] = []
+    @State private var searching = false
     
     var body: some View {
         NavigationView {
@@ -41,12 +42,21 @@ struct ContentView: View {
                     }
                 }.padding()
                 
-                TextField("Type here...", text: $search)
-                    .onSubmit {
-                        if !search.isEmpty {
-                            performOpenAISearch()
+                HStack {
+                    TextField("Type here...", text: $search)
+                        .onSubmit {
+                            if !search.isEmpty {
+                                searching = true
+                                performOpenAISearch()
+                            }
                         }
+                    .padding()
+                    if searching {
+                        ProgressView()
+                            .padding()
                     }
+                        
+                }
                 
             }.navigationTitle("ChatGPT")
         }
@@ -63,9 +73,11 @@ struct ContentView: View {
                 
                 questionAndAnswers.append(questioAndAnswer)
                 search = ""
+                searching = false
                 
             case .failure(let error):
                 print(error.localizedDescription)
+                searching = false
             }
         }
     }
