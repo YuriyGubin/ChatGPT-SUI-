@@ -13,17 +13,33 @@ struct QuestionAndAnswer: Identifiable {
     let id = UUID()
     
     let question: String
-    var answer: String?
+    var answer: String
 }
 
 struct ContentView: View {
     
     let openAI = OpenAISwift(authToken: "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")
+    
     @State private var search: String = ""
+    @State private var questionAndAnswers: [QuestionAndAnswer] = []
     
     var body: some View {
         NavigationView {
             VStack {
+                
+                ScrollView(showsIndicators: false) {
+                    ForEach(questionAndAnswers) { qa in
+                        VStack(spacing: 10) {
+                            Text(qa.question)
+                                .bold()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text(qa.answer)
+                                .padding([.bottom], 10)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                }.padding()
                 
                 TextField("Type here...", text: $search)
                     .onSubmit {
@@ -40,7 +56,14 @@ struct ContentView: View {
         openAI.sendCompletion(with: search) { result in
             switch result {
             case .success(let success):
-                print(success.choices.first?.text.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
+                
+                let questioAndAnswer = QuestionAndAnswer(
+                    question: search,
+                    answer: success.choices.first?.text.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
+                
+                questionAndAnswers.append(questioAndAnswer)
+                search = ""
+                
             case .failure(let error):
                 print(error.localizedDescription)
             }
