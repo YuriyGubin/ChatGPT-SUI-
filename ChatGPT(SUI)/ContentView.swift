@@ -6,80 +6,81 @@
 //
 
 import SwiftUI
-import OpenAISwift
-
-struct QuestionAndAnswer: Identifiable {
-    
-    let id = UUID()
-    
-    let question: String
-    var answer: String
-}
+import Combine
 
 struct ContentView: View {
     
-    let openAI = OpenAISwift(authToken: "")
+    @State var chatMessages: [ChatMessage] = []
+    @State var messageText = ""
     
-    @State private var search = ""
-    @State private var questionAndAnswers: [QuestionAndAnswer] = []
-    @State private var searching = false
+    let openAIService = OpenAIService()
+    @State var cancellables = Set<AnyCancellable>()
     
     var body: some View {
-        NavigationView {
-            VStack {
-                
-                ScrollView(showsIndicators: false) {
-                    ForEach(questionAndAnswers) { qa in
-                        VStack(spacing: 10) {
-                            Text(qa.question)
-                                .bold()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Text(qa.answer)
-                                .padding([.bottom], 10)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
+        VStack {
+            ScrollView {
+                LazyVStack {
+                    ForEach(chatMessages, id: \.id) { message in
+                        messageVeiw(message: message)
                     }
-                }.padding()
-                
-                HStack {
-                    TextField("Type here...", text: $search)
-                        .onSubmit {
-                            if !search.isEmpty {
-                                searching = true
-                                performOpenAISearch()
-                            }
-                        }
-                    .padding()
-                    if searching {
-                        ProgressView()
-                            .padding()
-                    }
-                        
                 }
-                
-            }.navigationTitle("ChatGPT")
+            }
+            HStack {
+                TextField("Type here...", text: $messageText) {
+                    sendMessage()
+                }
+                    .padding()
+                    .background(.gray.opacity(0.1))
+                    .cornerRadius(12)
+                Button {
+                    sendMessage()
+                } label: {
+                    Text("Send")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(.black)
+                        .cornerRadius(12)
+                }
+            }
+        }
+        .padding()
+    }
+    
+    func messageVeiw(message: ChatMessage) -> some View {
+        HStack {
+            if message.sender == .me { Spacer() }
+            Text(message.content)
+                .foregroundColor(message.sender == .me ? .white : .black)
+                .padding()
+                .background(message.sender == .me ? .blue : .gray.opacity(0.1))
+                .cornerRadius(16)
+            if message.sender == .gpt { Spacer() }
         }
     }
     
-    private func performOpenAISearch() {
-        openAI.sendCompletion(with: search) { result in
-            switch result {
-            case .success(let success):
-                
-                let questioAndAnswer = QuestionAndAnswer(
-                    question: search,
-                    answer: success.choices.first?.text.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
-                
-                questionAndAnswers.append(questioAndAnswer)
-                search = ""
-                searching = false
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-                searching = false
-            }
+    func sendMessage() {
+        let myMessage = ChatMessage(
+            id: UUID().uuidString,
+            content: messageText,
+            dateCreated: Date(),
+            sender: .me
+        )
+        chatMessages.append(myMessage)
+        openAIService.sendMessage(message: messageText).sink { completion in
+            //
+        } receiveValue: { response in
+            guard let textResponse = response.choices.first?.text else { return }
+            let gptMessage = ChatMessage(
+                id: response.id,
+                content: textResponse,
+                dateCreated: Date(),
+                sender: .gpt
+            )
+            chatMessages.append(gptMessage)
         }
+        .store(in: &cancellables)
+
+        messageText = ""
     }
 }
 
@@ -88,3 +89,45 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+struct ChatMessage {
+    let id: String
+    let content: String
+    let dateCreated: Date
+    let sender: MessageSender
+}
+
+enum MessageSender {
+    case me
+    case gpt
+}
+
+extension ChatMessage {
+    static let sampleMessages = [
+    ChatMessage(
+        id: UUID().uuidString,
+        content: "Sample Message From Me",
+        dateCreated: Date(),
+        sender: .me
+    ),
+    ChatMessage(
+        id: UUID().uuidString,
+        content: "Sample Message From GPT",
+        dateCreated: Date(),
+        sender: .gpt
+    ),
+    ChatMessage(
+        id: UUID().uuidString,
+        content: "Sample Message From Me",
+        dateCreated: Date(),
+        sender: .me
+    ),
+    ChatMessage(
+        id: UUID().uuidString,
+        content: "Sample Message From GPT",
+        dateCreated: Date(),
+        sender: .gpt
+    )
+    ]
+}
+
