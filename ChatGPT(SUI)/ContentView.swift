@@ -8,9 +8,17 @@
 import SwiftUI
 import OpenAISwift
 
+struct QuestionAndAnswer: Identifiable {
+    
+    let id = UUID()
+    
+    let question: String
+    var answer: String?
+}
+
 struct ContentView: View {
     
-    let openAI = OpenAISwift(authToken: "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")
+    let openAI = OpenAISwift(authToken: "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")
     @State private var search: String = ""
     
     var body: some View {
@@ -32,7 +40,7 @@ struct ContentView: View {
         openAI.sendCompletion(with: search) { result in
             switch result {
             case .success(let success):
-                print("")
+                print(success.choices.first?.text.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
             case .failure(let error):
                 print(error.localizedDescription)
             }
