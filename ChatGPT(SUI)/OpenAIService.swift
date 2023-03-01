@@ -16,7 +16,8 @@ class OpenAIService {
         let body = OpenAICompletionsBody(
             model: "text-davinci-003",
             prompt: message,
-            temperature: 0.7
+            temperature: 0.7,
+            max_tokens: 256
         )
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(Constants.openAIAPIKey)"
@@ -48,6 +49,7 @@ struct OpenAICompletionsBody: Encodable {
     let model: String
     let prompt: String
     let temperature: Float?
+    let max_tokens: Int
 }
 
 struct OpenAICompletionsResponse: Decodable {

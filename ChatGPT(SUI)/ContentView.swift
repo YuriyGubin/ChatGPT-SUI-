@@ -69,7 +69,9 @@ struct ContentView: View {
         openAIService.sendMessage(message: messageText).sink { completion in
             //
         } receiveValue: { response in
-            guard let textResponse = response.choices.first?.text else { return }
+            guard let textResponse = response.choices.first?.text.trimmingCharacters(
+                in: .whitespacesAndNewlines.union(.init(charactersIn: "\""))
+            ) else { return }
             let gptMessage = ChatMessage(
                 id: response.id,
                 content: textResponse,
