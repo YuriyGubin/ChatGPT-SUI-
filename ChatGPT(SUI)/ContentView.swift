@@ -6,16 +6,37 @@
 //
 
 import SwiftUI
+import OpenAISwift
 
 struct ContentView: View {
+    
+    let openAI = OpenAISwift(authToken: "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")
+    @State private var search: String = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            VStack {
+                
+                TextField("Type here...", text: $search)
+                    .onSubmit {
+                        if !search.isEmpty {
+                            performOpenAISearch()
+                        }
+                    }
+                
+            }.navigationTitle("ChatGPT")
         }
-        .padding()
+    }
+    
+    private func performOpenAISearch() {
+        openAI.sendCompletion(with: search) { result in
+            switch result {
+            case .success(let success):
+                print("")
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 
