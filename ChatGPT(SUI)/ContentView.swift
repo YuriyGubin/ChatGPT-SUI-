@@ -15,23 +15,34 @@ struct ContentView: View {
     
     let openAIService = OpenAIService()
     @State var cancellables = Set<AnyCancellable>()
+    @Namespace var bottomID
     
     var body: some View {
         VStack {
-            ScrollView {
-                LazyVStack {
-                    ForEach(chatMessages, id: \.id) { message in
-                        messageVeiw(message: message)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack {
+                        ForEach(chatMessages, id: \.id) { message in
+                            messageVeiw(message: message)
+                                .id(message.id)
+                        }
                     }
                 }
+                .onAppear {
+                    proxy.scrollTo(chatMessages.last?.id)
+                }
+                .onChange(of: chatMessages.count) { _ in
+                    proxy.scrollTo(chatMessages.last?.id)
+                }
             }
+            
             HStack {
                 TextField("Type here...", text: $messageText) {
                     sendMessage()
                 }
-                    .padding()
-                    .background(.gray.opacity(0.1))
-                    .cornerRadius(12)
+                .padding()
+                .background(.gray.opacity(0.1))
+                .cornerRadius(12)
                 Button {
                     sendMessage()
                 } label: {
@@ -81,7 +92,7 @@ struct ContentView: View {
             chatMessages.append(gptMessage)
         }
         .store(in: &cancellables)
-
+        
         messageText = ""
     }
 }
@@ -106,30 +117,30 @@ enum MessageSender {
 
 extension ChatMessage {
     static let sampleMessages = [
-    ChatMessage(
-        id: UUID().uuidString,
-        content: "Sample Message From Me",
-        dateCreated: Date(),
-        sender: .me
-    ),
-    ChatMessage(
-        id: UUID().uuidString,
-        content: "Sample Message From GPT",
-        dateCreated: Date(),
-        sender: .gpt
-    ),
-    ChatMessage(
-        id: UUID().uuidString,
-        content: "Sample Message From Me",
-        dateCreated: Date(),
-        sender: .me
-    ),
-    ChatMessage(
-        id: UUID().uuidString,
-        content: "Sample Message From GPT",
-        dateCreated: Date(),
-        sender: .gpt
-    )
+        ChatMessage(
+            id: UUID().uuidString,
+            content: "Sample Message From Me",
+            dateCreated: Date(),
+            sender: .me
+        ),
+        ChatMessage(
+            id: UUID().uuidString,
+            content: "Sample Message From GPT",
+            dateCreated: Date(),
+            sender: .gpt
+        ),
+        ChatMessage(
+            id: UUID().uuidString,
+            content: "Sample Message From Me",
+            dateCreated: Date(),
+            sender: .me
+        ),
+        ChatMessage(
+            id: UUID().uuidString,
+            content: "Sample Message From GPT",
+            dateCreated: Date(),
+            sender: .gpt
+        )
     ]
 }
 
