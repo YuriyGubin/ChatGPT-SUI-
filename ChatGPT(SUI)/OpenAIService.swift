@@ -17,7 +17,7 @@ class OpenAIService {
             model: "text-davinci-003",
             prompt: message,
             temperature: 0.7,
-            max_tokens: 256
+            max_tokens: 1024
         )
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(Constants.openAIAPIKey)"

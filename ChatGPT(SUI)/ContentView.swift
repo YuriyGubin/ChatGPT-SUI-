@@ -12,6 +12,7 @@ struct ContentView: View {
     
     @State var chatMessages: [ChatMessage] = []
     @State var messageText = ""
+    @State var color = #colorLiteral(red: 0.4796224236, green: 0.788797915, blue: 0.7097511292, alpha: 1)
     
     let openAIService = OpenAIService()
     @State var cancellables = Set<AnyCancellable>()
@@ -19,6 +20,19 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            HStack {
+                Spacer()
+                Image("ChatGPT")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                Text("ChatGPT")
+                    .font(.largeTitle)
+                    .background()
+                    .padding(10)
+                Spacer()
+                
+            }
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack {
