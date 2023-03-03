@@ -26,9 +26,7 @@ struct ContentView: View {
                     .frame(height: 60)
                     .ignoresSafeArea()
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                
                 HStack {
-                    
                     Spacer()
                     Image("ChatGPT")
                         .resizable()
@@ -41,7 +39,6 @@ struct ContentView: View {
                         .font(.system(size: 27))
                         .bold()
                     Spacer()
-                    
                 }
             }
             ScrollViewReader { proxy in
