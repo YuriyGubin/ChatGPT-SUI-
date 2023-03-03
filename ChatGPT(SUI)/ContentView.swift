@@ -12,7 +12,6 @@ struct ContentView: View {
     
     @State var chatMessages: [ChatMessage] = []
     @State var messageText = ""
-    @State var color = #colorLiteral(red: 0.4796224236, green: 0.788797915, blue: 0.7097511292, alpha: 1)
     
     let openAIService = OpenAIService()
     @State var cancellables = Set<AnyCancellable>()
@@ -35,9 +34,15 @@ struct ContentView: View {
                         .frame(width: 60, height: 60)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     Text("ChatGPT")
-                        .tracking(5)
+                        .tracking(3)
+                        .foregroundColor(.white)
                         .background(Color.init(backColor.cgColor!))
-                        .font(.largeTitle)
+                        .font(.system(size: 27))
+                        .bold()
+                      //  .font(.largeTitle)
+                        
+                        
+                        
                         
                     Spacer()
                     
