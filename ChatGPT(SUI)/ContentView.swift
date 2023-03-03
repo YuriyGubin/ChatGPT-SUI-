@@ -137,32 +137,3 @@ enum MessageSender {
     case gpt
 }
 
-extension ChatMessage {
-    static let sampleMessages = [
-        ChatMessage(
-            id: UUID().uuidString,
-            content: "Sample Message From Me",
-            dateCreated: Date(),
-            sender: .me
-        ),
-        ChatMessage(
-            id: UUID().uuidString,
-            content: "Sample Message From GPT",
-            dateCreated: Date(),
-            sender: .gpt
-        ),
-        ChatMessage(
-            id: UUID().uuidString,
-            content: "Sample Message From Me",
-            dateCreated: Date(),
-            sender: .me
-        ),
-        ChatMessage(
-            id: UUID().uuidString,
-            content: "Sample Message From GPT",
-            dateCreated: Date(),
-            sender: .gpt
-        )
-    ]
-}
-
