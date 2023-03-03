@@ -20,18 +20,28 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                Image("ChatGPT")
-                    .resizable()
-                    .frame(width: 60, height: 60)
+            ZStack {
+                let backColor = Color(#colorLiteral(red: 0.07088997215, green: 0.6400098801, blue: 0.4992959499, alpha: 1))
+                Color.init(backColor.cgColor!)
+                    .frame(height: 60)
+                    .ignoresSafeArea()
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                Text("ChatGPT")
-                    .font(.largeTitle)
-                    .background()
-                    .padding(10)
-                Spacer()
                 
+                HStack {
+                    
+                    Spacer()
+                    Image("ChatGPT")
+                        .resizable()
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    Text("ChatGPT")
+                        .tracking(5)
+                        .background(Color.init(backColor.cgColor!))
+                        .font(.largeTitle)
+                        
+                    Spacer()
+                    
+                }
             }
             ScrollViewReader { proxy in
                 ScrollView {
