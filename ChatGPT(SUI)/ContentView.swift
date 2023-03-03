@@ -12,15 +12,18 @@ struct ContentView: View {
     
     @State var chatMessages: [ChatMessage] = []
     @State var messageText = ""
+    @State var backColor = Color(#colorLiteral(red: 0.07088997215, green: 0.6400098801, blue: 0.4992959499, alpha: 1))
     
     let openAIService = OpenAIService()
     @State var cancellables = Set<AnyCancellable>()
     @Namespace var bottomID
     
     var body: some View {
+       
         VStack {
+            
             ZStack {
-                let backColor = Color(#colorLiteral(red: 0.07088997215, green: 0.6400098801, blue: 0.4992959499, alpha: 1))
+                
                 Color.init(backColor.cgColor!)
                     .frame(height: 60)
                     .ignoresSafeArea()
@@ -39,11 +42,6 @@ struct ContentView: View {
                         .background(Color.init(backColor.cgColor!))
                         .font(.system(size: 27))
                         .bold()
-                      //  .font(.largeTitle)
-                        
-                        
-                        
-                        
                     Spacer()
                     
                 }
@@ -78,7 +76,7 @@ struct ContentView: View {
                     Text("Send")
                         .foregroundColor(.white)
                         .padding()
-                        .background(.black)
+                        .background(Color.init(backColor.cgColor!))
                         .cornerRadius(12)
                 }
             }
@@ -92,7 +90,7 @@ struct ContentView: View {
             Text(message.content)
                 .foregroundColor(message.sender == .me ? .white : .black)
                 .padding()
-                .background(message.sender == .me ? .blue : .gray.opacity(0.1))
+                .background(message.sender == .me ? .black.opacity(0.8) : .gray.opacity(0.1))
                 .cornerRadius(16)
             if message.sender == .gpt { Spacer() }
         }
